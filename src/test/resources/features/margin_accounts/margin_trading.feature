@@ -18,15 +18,15 @@ Feature: Margin Trading
     Example: An investor buys some shares on margin
       When he makes the following transaction:
         | Security | Buy/Sell | Number of shares | Cash   | Margin Loan |
-        | Facebook | Buy      | 1000             | $50000 | $50000      |
+        | Facebook | BUY      | 1000             | $50000 | $50000      |
       Then he should have the following position:
-        | Security | Number of shares | Initial Value | Initial Margin |
-        | Facebook | 1000             | $100000       | 50%            |
+        | Security | Buy/Sell | Number of shares | Initial Price | Cash   | Margin Loan | Value   | Initial Margin |
+        | Facebook | BUY      | 1000             | $100          | $50000 | $50000      | $100000 | 50%            |
 
     Example: The maximum initial margin is 50%
       When he attempts to make the following transaction:
         | Security | Buy/Sell | Number of shares | Cash   | Margin Loan |
-        | Facebook | Buy      | 1000             | $40000 | $60000      |
+        | Facebook | BUY      | 1000             | $40000 | $60000      |
       Then the transaction should be rejected
 
   Rule: The equity of an account is the current market value of the securities and cash less what is owed to the broker
@@ -34,7 +34,7 @@ Feature: Margin Trading
       Given XYZ is trading at a market price of $50
       When he makes the following transaction:
         | Security | Buy/Sell | Number of shares | Cash   | Margin Loan   |
-        | XYZ      | Buy      | 1000             | <Cash> | <Margin Loan> |
+        | XYZ      | BUY      | 1000             | <Cash> | <Margin Loan> |
       Then his initial equity on this position is:
         | Security | Number of shares | Value   | Loan   | Equity   | % Equity    |
         | XYZ      | 1000             | <Value> | <Loan> | <Equity> | <% Equity>% |
@@ -48,7 +48,7 @@ Feature: Margin Trading
     Scenario Outline: The % Equity varies as the market price changes
       Given Ian has the following initial position:
         | Security | Buy/Sell | Number of shares | Cash  | Margin Loan | Initial Market Price |
-        | XYZ      | Buy      | 1000             | 40000 | 10000       | $50                  |
+        | XYZ      | BUY      | 1000             | 40000 | 10000       | $50                  |
       When the current market price of XYZ is <Current Market Price>
       Then the equity on his position is:
         | Security | Number of shares | Value   | Equity   | % Equity    |
@@ -61,14 +61,14 @@ Feature: Margin Trading
 
   Rule: Investors must keep a margin of at least 30% on their account
   This is known as "Margin Maintenance"
-    Example: Ian gets a margin call
+    Example: Ian gets a margin call when a share price drops too much
       Given Ian has the following initial position:
         | Security | Buy/Sell | Number of shares | Cash  | Margin Loan | Initial Market Price |
-        | XYZ      | Buy      | 1000             | 25000 | 25000       | $50                  |
-      When the current market price of XYZ is $35
+        | XYZ      | BUY      | 1000             | 25000 | 25000       | $50                  |
+      When the current market price of XYZ drops to $35
       Then the equity on his position is:
         | Security | Number of shares | Value  | Equity | % Equity |
         | XYZ      | 1000             | $35000 | $10000 | 28.5     |
-      And Ian should get a margin call for $525
+      And he should get a margin call for $525
 
 
